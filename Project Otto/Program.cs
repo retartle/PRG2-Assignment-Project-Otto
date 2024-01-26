@@ -5,9 +5,12 @@
 //==========================================================
 
 using Project_Otto;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.Intrinsics.Arm;
 
 List<Customer> customerList = new List<Customer>();
+List<Order> goldOrderList = new List<Order>();
+List<Order> regularOrderList = new List<Order>();
 Queue<Order> goldOrderQueue = new Queue<Order>();
 Queue<Order> regularOrderQueue = new Queue<Order>();
 
@@ -57,7 +60,7 @@ static void InitCustomers(List<Customer> customerList)
     }
 }
 
-static void InitOrders(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue)
+static void InitOrders(List<Customer> customerList, List<Order> goldOrderList, List<Order> regularOrderList)
 {
     string[] lines = File.ReadAllLines("C:\\Users\\neolt\\OneDrive - Ngee Ann Polytechnic\\CSFNP\\Y1S2\\PRG2\\Project\\Project Otto\\Project Otto\\orders.csv");
 
@@ -143,10 +146,10 @@ static void InitOrders(List<Customer> customerList, Queue<Order> goldOrderQueue,
 
         bool orderExists = false;
 
-        if (goldOrderQueue.Count > 0) 
+        if (goldOrderList.Count > 0) 
         {
             
-            foreach (Order o in goldOrderQueue) /* Checking for existing order */
+            foreach (Order o in goldOrderList) /* Checking for existing order */
             {
                 if (o.Id == id)
                 {
@@ -158,9 +161,9 @@ static void InitOrders(List<Customer> customerList, Queue<Order> goldOrderQueue,
 
             if (!orderExists)
             {
-                if (regularOrderQueue.Count > 0)
+                if (regularOrderList.Count > 0)
                 {
-                    foreach (Order o in regularOrderQueue)
+                    foreach (Order o in regularOrderList)
                     {
                         if (o.Id == id)
                         {
@@ -184,11 +187,11 @@ static void InitOrders(List<Customer> customerList, Queue<Order> goldOrderQueue,
                 {
                     if (customer.Rewards.Tier == "Gold")
                     {
-                        goldOrderQueue.Enqueue(newOrder);
+                        goldOrderList.Add(newOrder);
                     }
                     else
                     {
-                        regularOrderQueue.Enqueue(newOrder);
+                        regularOrderList.Add(newOrder);
                     }
                     customer.OrderHistory.Add(newOrder);
                     break;
@@ -200,7 +203,7 @@ static void InitOrders(List<Customer> customerList, Queue<Order> goldOrderQueue,
     }
 }
 
-static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue)
+static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue, List<Order> goldOrderList, List<Order> regularOrderList)
 {
     while (true)
     {
@@ -216,17 +219,18 @@ static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQu
         else if (option == 1)
         {
             Console.WriteLine("Chosen Option: [1] List all customers\n");
-            Option1(customerList);
+            ListCustomers(customerList);
         }
 
         else if (option == 2)
         {
             Console.WriteLine("Chosen Option: [2] List all current orders\n");
-            Option2(goldOrderQueue, regularOrderQueue);
+            ListCurrentOrders(goldOrderQueue, regularOrderQueue);
         }
 
         else if (option == 4)
         {
+            CreateOrder(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);
             break;
         }
 
@@ -298,12 +302,14 @@ static void DisplayOrder(Order order)
             t4 = ic.Toppings[3].Type;
         }
 
+        var fulfilled = (order.TimeFulfilled == DateTime.MinValue) ? "-" : order.TimeFulfilled.ToString();
+
         Console.WriteLine
             (
             "|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|",
             order.Id,
-            order.TimeReceived,
-            order.TimeFulfilled,
+            order.TimeReceived.ToString(),
+            fulfilled,
             ic.Option,
             ic.Scoops,
             dipped,
@@ -319,7 +325,7 @@ static void DisplayOrder(Order order)
     }
 }
 
-static void Option1(List<Customer> customerList)
+static void ListCustomers(List<Customer> customerList)
 {
     Console.WriteLine("{0,-10}{1,-11}{2,-12}{3,-19}{4,-19}{5,-12}", "Name", "Member ID", "DOB", "Membership Status", "Membership Points", "Punch Card");
     foreach (Customer customer in customerList)
@@ -328,26 +334,124 @@ static void Option1(List<Customer> customerList)
     }
 }
 
-static void Option2(Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue)
+static void ListCurrentOrders(Queue<Order> goldOrderQueue,  Queue<Order> regularOrderQueue)
 {
     Console.WriteLine("Gold Member Orders:");
     Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
     Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-    foreach (Order o in goldOrderQueue)
+
+    if (goldOrderQueue.Count > 0)
     {
-        DisplayOrder(o);
+        foreach (Order o in goldOrderQueue)
+        {
+            DisplayOrder(o);
+        }
+    }
+
+    else
+    {
+        Console.WriteLine("No Current Gold member orders.");
     }
 
     Console.WriteLine("\nRegular Member Orders:");
     Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
     Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-    foreach (Order o in regularOrderQueue)
+    
+    if (regularOrderQueue.Count > 0)
     {
-        DisplayOrder(o);
+        foreach (Order o in regularOrderQueue)
+        {
+            DisplayOrder(o);
+        }
+    }
+
+    else
+    {
+        Console.WriteLine("No Current Regular member orders.");
     }
 }
 
+static void CreateOrder(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue, List<Order> goldOrderList, List<Order> regularOrderList)
+{
+    ListCustomers(customerList);
+
+    while (true)
+    {
+        int memId = 0;
+
+        Console.Write("Enter a Customer's ID to retrieve Customer: ");
+        try
+        {
+            memId = Convert.ToInt32(Console.ReadLine());
+        }
+        catch (FormatException ex)
+        {
+            Console.WriteLine("Invalid Input! Member IDs are 6 Integers.");
+            continue;
+        }
+        Customer customer = null;
+
+        foreach (Customer c in customerList)
+        {
+            if (c.MemberId == memId)
+            {
+                customer = c;
+                break;
+            }
+        }
+
+        if (customer == null)
+        {
+            Console.WriteLine("Customer ID does not exist.");
+        }
+
+        else
+        {
+            Console.WriteLine($"Hi, {customer.Name}. Welcome to I.C. Treats, please fill up your order :)");
+            Order newOrder = customer.MakeOrder();
+
+            int highestOrderId = 0;
+            foreach (Order o in goldOrderList) /* Finding next highest order ID that can be assigned */
+            {
+                if (o.Id >= highestOrderId)
+                {
+                    highestOrderId = o.Id;
+                }
+            }
+
+            foreach (Order o in regularOrderList) /* Run second check on regular list */
+            {
+                if (o.Id >= highestOrderId)
+                {
+                    highestOrderId = o.Id;
+                }
+            }
+
+            newOrder.Id = highestOrderId+1;
+
+            Console.WriteLine("Your Order Details:");
+            Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
+            Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+            DisplayOrder(newOrder);
+
+            if (customer.Rewards.Tier == "Gold")
+            {
+                goldOrderQueue.Enqueue(newOrder);
+                Console.WriteLine("Gold Member Order Completed.");
+            } 
+
+            else
+            {
+                regularOrderQueue.Enqueue(newOrder);
+                Console.WriteLine("Regular Member Order Completed.");
+            }
+            break;
+        }
+    }
+}
+
+
 InitCustomers(customerList);
-InitOrders(customerList, goldOrderQueue, regularOrderQueue);
+InitOrders(customerList, goldOrderList, regularOrderList);
 Menu();
-OptionSelector(customerList, goldOrderQueue, regularOrderQueue);
+OptionSelector(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);

@@ -32,10 +32,10 @@ namespace Project_Otto
 
         public void AddPoints(int points)
         {
-            Points += points;
+            Points += points; /* Not completed, may be wrong */
         }
 
-        public void RedeemPoints(int points)
+        public void RedeemPoints(int points) /* Not completed, may be wrong */
         {
             if (Points >= points)
             {
@@ -50,7 +50,7 @@ namespace Project_Otto
 
         public void Punch()
         {
-            punchCard += 1;
+            punchCard += 1; /* Not completed, may be wrong */
         }
 
         public override string ToString()

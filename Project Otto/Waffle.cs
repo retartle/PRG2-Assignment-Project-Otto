@@ -29,7 +29,7 @@ namespace Project_Otto
 
         public override double CalculatePrice()
         {
-            return 0;
+            return 0; /* Placeholder, not implemented yet */
         }
 
         public override string ToString()

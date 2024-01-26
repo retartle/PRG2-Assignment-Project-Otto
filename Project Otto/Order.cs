@@ -34,7 +34,7 @@ namespace Project_Otto
 
         public void ModifyIceCream(int id)
         {
-
+            /* Placeholder, not implemented yet */
         }
 
         public void AddIceCream(IceCream ic)
@@ -44,7 +44,7 @@ namespace Project_Otto
 
         public void DeleteIceCream(int id)
         {
-
+            /* Placeholder, not implemented yet */
         }
 
         public double CalculateTotal()
@@ -56,6 +56,8 @@ namespace Project_Otto
                 total += price;
             }
             return total;
+
+            /* Not completed, may be wrong */
         }
 
         public override string ToString()
