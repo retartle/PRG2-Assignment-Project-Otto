@@ -31,8 +31,8 @@ namespace Project_Otto
         {
             option = o;
             scoops = s;
-            Flavours = f;
-            Toppings = t;
+            Flavours = new List<Flavour>(f);
+            Toppings = new List<Topping>(t);
         }
 
         public abstract double CalculatePrice();

@@ -231,7 +231,6 @@ static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQu
         else if (option == 4)
         {
             CreateOrder(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);
-            break;
         }
 
         else if (option == 6)
@@ -426,6 +425,23 @@ static void CreateOrder(List<Customer> customerList, Queue<Order> goldOrderQueue
                     highestOrderId = o.Id;
                 }
             }
+
+            foreach (Order o in goldOrderQueue) /* Extra checks */
+            {
+                if (o.Id >= highestOrderId)
+                {
+                    highestOrderId = o.Id;
+                }
+            }
+
+            foreach (Order o in regularOrderQueue) /* Extra Checks */
+            {
+                if (o.Id >= highestOrderId)
+                {
+                    highestOrderId = o.Id;
+                }
+            }
+
 
             newOrder.Id = highestOrderId+1;
 

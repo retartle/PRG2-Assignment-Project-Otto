@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -41,109 +42,140 @@ namespace Project_Otto
             Rewards = new PointCard();
         }
 
-        public Order MakeOrder()
+        public Order MakeOrder() /* Reason for taking in order as an arg is due to the problems of overwriting previus icecreams not sure why but this fixed it */
         {
             CurrentOrder = new Order();
+            CurrentOrder.TimeReceived = DateTime.Now;
             string[] options = { "cup", "cone", "waffle" };
             string chosenOption = "";
-            
 
-            while (true)
-            {
-                Console.Write("Option (Cup/Cone/Waffle): ");
-                chosenOption = Console.ReadLine().ToLower();
-                if (options.Contains(chosenOption))
-                {
-                    break;
-                }
-                Console.WriteLine("Invalid Option! Please input one of the specified options.");
-            }
+            bool outerLoopFlag = true;
 
-            if (chosenOption == "cup")
+            while (outerLoopFlag)
             {
-                Cup cup = new Cup();
-                cup.Option = "Cup";
-                cup.Flavours = new List<Flavour>();
-                cup.Toppings = new List<Topping>();
-                ConfigIceCream(cup);
-
-                CurrentOrder.AddIceCream(cup);
-                CurrentOrder.TimeReceived = DateTime.Now;
-            }
-            else if (chosenOption == "cone")
-            {
-                Cone cone = new Cone();
-                cone.Option = "Cone";
-                cone.Flavours = new List<Flavour>();
-                cone.Toppings = new List<Topping>();
-                ConfigIceCream(cone);
-                bool dipped = false;
                 while (true)
                 {
-                    Console.Write("Dipped (Y/N): ");
-                    string reply = Console.ReadLine().ToLower().Trim();
-
-                    if (reply == "y" || reply == "yes")
+                    Console.Write("Option (Cup/Cone/Waffle): ");
+                    chosenOption = Console.ReadLine().ToLower();
+                    if (options.Contains(chosenOption))
                     {
-                        dipped = true;
                         break;
                     }
-
-                    else if (reply == "n" || reply == "no")
-                    {
-                        Console.WriteLine("No Dipping Configured.");
-                        break;
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("Invalid Input! Please input between (Y/N).");
-                    }
+                    Console.WriteLine("Invalid Option! Please input one of the specified options.");
                 }
 
-                cone.Dipped = dipped;
-                CurrentOrder.AddIceCream(cone);
-                CurrentOrder.TimeReceived = DateTime.Now;
-            }
-            else if (chosenOption == "waffle")
-            {
-                Waffle waffle = new Waffle();
-                waffle.Option = "Waffle";
-                waffle.Flavours = new List<Flavour>();
-                waffle.Toppings = new List<Topping>();
-                ConfigIceCream(waffle);
-
-                while (true)
+                if (chosenOption == "cup")
                 {
-                    Console.Write("Do you want a Waffle Flavour? (Y/N): ");
-                    string waffleFlavour = "";
-                    string reply = Console.ReadLine().ToLower().Trim();
+                    Cup cup = new Cup();
+                    cup.Option = "Cup";
+                    cup.Flavours = new List<Flavour>();
+                    cup.Toppings = new List<Topping>();
+                    ConfigIceCream(cup);
 
-                    if (reply == "y" || reply == "yes")
+                    CurrentOrder.AddIceCream(cup);
+                    CurrentOrder.TimeReceived = DateTime.Now;
+                }
+                else if (chosenOption == "cone")
+                {
+                    Cone cone = new Cone();
+                    cone.Option = "Cone";
+                    cone.Flavours = new List<Flavour>();
+                    cone.Toppings = new List<Topping>();
+                    ConfigIceCream(cone);
+                    bool dipped = false;
+                    while (true)
                     {
-                        string[] flavours = { "red velvet", "charcoal", "pandan" };
-                        while (true)
+                        Console.Write("Dipped (Y/N): ");
+                        string reply = Console.ReadLine().ToLower().Trim();
+
+                        if (reply == "y" || reply == "yes")
                         {
-                            Console.Write($"Waffle Flavour (Red Velvet/Charcoal/Pandan): ");
-                            string option = Console.ReadLine().ToLower().Trim();
-
-                            if (flavours.Contains(option))
-                            {
-                                waffle.WaffleFlavour = option;
-                                break;
-                            }
-
-                            else
-                            {
-                                Console.WriteLine("Invalid Input! Please input one of the specified premium flavours.");
-                            }
+                            dipped = true;
+                            break;
                         }
+
+                        else if (reply == "n" || reply == "no")
+                        {
+                            Console.WriteLine("No Dipping Configured.");
+                            break;
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid Input! Please input between (Y/N).");
+                        }
+                    }
+
+                    cone.Dipped = dipped;
+                    CurrentOrder.AddIceCream(cone);
+                    CurrentOrder.TimeReceived = DateTime.Now;
+                }
+                else if (chosenOption == "waffle")
+                {
+                    Waffle waffle = new Waffle();
+                    waffle.Option = "Waffle";
+                    waffle.Flavours = new List<Flavour>();
+                    waffle.Toppings = new List<Topping>();
+                    ConfigIceCream(waffle);
+
+                    while (true)
+                    {
+                        Console.Write("Do you want a Waffle Flavour? (Y/N): ");
+                        string waffleFlavour = "";
+                        string reply = Console.ReadLine().ToLower().Trim();
+
+                        if (reply == "y" || reply == "yes")
+                        {
+                            string[] flavours = { "red velvet", "charcoal", "pandan" };
+                            while (true)
+                            {
+                                Console.Write($"Waffle Flavour (Red Velvet/Charcoal/Pandan): ");
+                                string option = Console.ReadLine().ToLower().Trim();
+
+                                if (flavours.Contains(option))
+                                {
+                                    waffle.WaffleFlavour = option;
+                                    break;
+                                }
+
+                                else
+                                {
+                                    Console.WriteLine("Invalid Input! Please input one of the specified waffle flavours.");
+                                }
+                            }
+                            break;
+                        }
+
+                        else if (reply == "n" || reply == "no")
+                        {
+                            Console.WriteLine("Original Waffle Flavour Configured.");
+                            break;
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid Input! Please input between (Y/N).");
+                        }
+                    }
+
+                    CurrentOrder.AddIceCream(waffle);
+                }
+
+                while (true)
+                {
+                    Console.Write("Would you like to add another ice cream? (Y/N):");
+                    string input = Console.ReadLine().ToLower().Trim();
+
+                    if (input == "y" || input == "yes")
+                    {
+                        Console.WriteLine("Configure your new ice cream.");
                         break;
                     }
 
-                    else if (reply == "n" || reply == "no")
+                    else if (input == "n" || input == "no")
                     {
-                        Console.WriteLine("Original Waffle Flavour Configured.");
+                        Console.WriteLine("Not adding another ice cream.");
+                        outerLoopFlag = false;
                         break;
                     }
 
@@ -152,9 +184,6 @@ namespace Project_Otto
                         Console.WriteLine("Invalid Input! Please input between (Y/N).");
                     }
                 }
-
-                CurrentOrder.AddIceCream(waffle);
-                CurrentOrder.TimeReceived = DateTime.Now;
             }
             return CurrentOrder;
         }
@@ -187,6 +216,7 @@ namespace Project_Otto
                 if (input == "y" || input == "yes")
                 {
                     premium = true;
+                    Console.WriteLine("Premium Flavours Chosen.");
                 }
 
                 else if (input == "n" || input == "no")
@@ -201,91 +231,99 @@ namespace Project_Otto
                     continue;
                 }
 
-                if (premium)
+                while (true)
                 {
-                    string[] flavours = { "durian", "ube", "sea salt" };
-                    Console.Write($"Flavour {i} (Durian/Ube/Sea Salt): ");
-                    string option = Console.ReadLine().ToLower().Trim();
-
-                    if (flavours.Contains(option))
+                    if (premium)
                     {
-                        Flavour existingFlavour = flavourExists(ic, option);
-                        if (existingFlavour != null)
+                        string[] flavours = { "durian", "ube", "sea salt" };
+                        Console.Write($"Premium Flavour {i} (Durian/Ube/Sea Salt): ");
+                        string option = Console.ReadLine().ToLower().Trim();
+
+                        if (flavours.Contains(option))
                         {
-                            existingFlavour.Quantity += 1;
+                            Flavour existingFlavour = flavourExists(ic, option);
+                            if (existingFlavour != null)
+                            {
+                                existingFlavour.Quantity += 1;
+                            }
+                            else
+                            {
+                                Flavour newFlavour = new Flavour(option, true, 1);
+                                ic.Flavours.Add(newFlavour);
+                            }
+                            break;
                         }
+
                         else
                         {
-                            Flavour newFlavour = new Flavour(option, true, 1);
-                            ic.Flavours.Add(newFlavour);
+                            Console.WriteLine("Invalid Input! Please input one of the specified premium flavours.");
                         }
                     }
 
                     else
                     {
-                        Console.WriteLine("Invalid Input! Please input one of the specified premium flavours.");
-                        i--;
+                        string[] flavours = { "vanilla", "chocolate", "strawberry" };
+                        Console.Write($"Regular Flavour {i} (Vanilla/Chocolate/Strawberry): ");
+                        string option = Console.ReadLine().ToLower().Trim();
+
+                        if (flavours.Contains(option))
+                        {
+                            Flavour existingFlavour = flavourExists(ic, option);
+                            if (existingFlavour != null)
+                            {
+                                existingFlavour.Quantity += 1;
+                            }
+                            else
+                            {
+                                Flavour newFlavour = new Flavour(option, true, 1);
+                                ic.Flavours.Add(newFlavour);
+                            }
+                            break;
+                        }
+
+                        else
+                        {
+                            Console.WriteLine("Invalid Input! Please input one of the specified flavours.");
+                        }
                     }
+                }
+            }
+
+            bool addToppings = false;
+            int amt = 0;
+            while (true)
+            {
+                Console.Write($"Any Toppings? (Y/N): "); /* Toppings */
+                string reply = Console.ReadLine().ToLower().Trim();
+
+                if (reply == "y" || reply == "yes")
+                {
+                    addToppings = true;
+                    while (true)
+                    {
+                        Console.Write("How many? (1-3): ");
+                        if (int.TryParse(Console.ReadLine(), out amt) && amt > 0 && amt <= 3)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid Input! Please input one of the numbers within the specified range.");
+                        }
+                    }
+                    break;
+                }
+
+                else if (reply == "n" || reply == "no")
+                {
+                    Console.WriteLine("No Toppings added.");
+                    break;
                 }
 
                 else
                 {
-                    string[] flavours = { "vanilla", "chocolate", "strawberry" };
-                    Console.Write($"Flavour {i} (Vanilla/Chocolate/Strawberry): ");
-                    string option = Console.ReadLine().ToLower().Trim();
-
-                    if (flavours.Contains(option))
-                    {
-                        Flavour existingFlavour = flavourExists(ic, option);
-                        if (existingFlavour != null)
-                        {
-                            existingFlavour.Quantity += 1;
-                        }
-                        else
-                        {
-                            Flavour newFlavour = new Flavour(option, true, 1);
-                            ic.Flavours.Add(newFlavour);
-                        }
-                    }
-
-                    else
-                    {
-                        Console.WriteLine("Invalid Input! Please input one of the specified flavours.");
-                        i--;
-                    }
+                    Console.WriteLine("Invalid Input! Please input between (Y/N).");
                 }
-            }
-
-            Console.Write($"Any Toppings? (Y/N): "); /* Toppings */
-            bool addToppings = false;
-            int amt = 0;
-            string reply = Console.ReadLine().ToLower().Trim();
-
-            if (reply == "y" || reply == "yes")
-            {
-                addToppings = true;
-                while (true)
-                {
-                    Console.Write("How many? (1-3): ");
-                    if (int.TryParse(Console.ReadLine(), out amt) && amt > 0 && amt <= 3)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Input! Please input one of the numbers within the specified range.");
-                    }
-                }
-            }
-
-            else if (reply == "n" || reply == "no")
-            {
-                Console.WriteLine("No Toppings added.");
-            }
-
-            else
-            {
-                Console.WriteLine("Invalid Input! Please input between (Y/N).");
             }
 
             if (addToppings)
@@ -305,6 +343,7 @@ namespace Project_Otto
                     else
                     {
                         Console.WriteLine("Invalid Input! Please input one of the specified toppings.");
+                        i--;
                     }
                 }
             }
