@@ -36,6 +36,24 @@ static void Menu()
     Console.WriteLine("----------------------");
 }
 
+static void Option6Menu()
+{
+    string[] options =
+    {
+        "Choose an existing icecream to modify",
+        "Add a new icecream",
+        "Delete an icecream from the order",
+    };
+
+    Console.WriteLine("---------MENU---------");
+    int n = 0;
+    foreach (string i in options)
+    {
+        Console.WriteLine($"[{n += 1}] {i}");
+    }
+    Console.WriteLine("----------------------");
+}
+
 static void InitCustomers(List<Customer> customerList)
 {
     string[] lines = File.ReadAllLines("C:\\Users\\neolt\\OneDrive - Ngee Ann Polytechnic\\CSFNP\\Y1S2\\PRG2\\Project\\Project Otto\\Project Otto\\customers.csv");
@@ -59,7 +77,6 @@ static void InitCustomers(List<Customer> customerList)
         customerList.Add(temp);
     }
 }
-
 static void InitOrders(List<Customer> customerList, List<Order> goldOrderList, List<Order> regularOrderList)
 {
     string[] lines = File.ReadAllLines("C:\\Users\\neolt\\OneDrive - Ngee Ann Polytechnic\\CSFNP\\Y1S2\\PRG2\\Project\\Project Otto\\Project Otto\\orders.csv");
@@ -153,7 +170,7 @@ static void InitOrders(List<Customer> customerList, List<Order> goldOrderList, L
             {
                 if (o.Id == id)
                 {
-                    o.AddIceCream(iceCream);
+                    o.IceCreamList.Add(iceCream);
                     orderExists = true;
                     break;
                 }
@@ -167,7 +184,7 @@ static void InitOrders(List<Customer> customerList, List<Order> goldOrderList, L
                     {
                         if (o.Id == id)
                         {
-                            o.AddIceCream(iceCream);
+                            o.IceCreamList.Add(iceCream);
                             orderExists = true;
                             break;
                         }
@@ -179,7 +196,7 @@ static void InitOrders(List<Customer> customerList, List<Order> goldOrderList, L
         if (!orderExists)
         {
             Order newOrder = new Order { Id = id, TimeReceived = timeReceived, TimeFulfilled = timeFulfilled };
-            newOrder.AddIceCream(iceCream);
+            newOrder.IceCreamList.Add(iceCream);
 
             foreach (Customer customer in customerList)
             {
@@ -230,12 +247,13 @@ static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQu
 
         else if (option == 4)
         {
+            Console.WriteLine("Chosen Option: [4] Create a customer’s order\n");
             CreateOrder(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);
         }
 
         else if (option == 6)
         {
-            break;
+            ModifyOrder(customerList);
         }
         
         else
@@ -466,6 +484,123 @@ static void CreateOrder(List<Customer> customerList, Queue<Order> goldOrderQueue
     }
 }
 
+static void ModifyOrder(List<Customer> customerList)
+{
+    ListCustomers(customerList);
+    bool outerLoopFlag = true;
+
+    while (outerLoopFlag)
+    {
+        int memId = 0;
+
+        Console.Write("Enter a Customer's ID to retrieve Customer: ");
+        try
+        {
+            memId = Convert.ToInt32(Console.ReadLine());
+        }
+        catch (FormatException ex)
+        {
+            Console.WriteLine("Invalid Input! Member IDs are 6 Integers.");
+            continue;
+        }
+        Customer customer = null;
+
+        foreach (Customer c in customerList)
+        {
+            if (c.MemberId == memId)
+            {
+                customer = c;
+                break;
+            }
+        }
+
+        if (customer == null)
+        {
+            Console.WriteLine("Customer ID does not exist.");
+        }
+
+        else
+        {
+            if (customer.CurrentOrder != null)
+            {
+                Console.WriteLine($"Hi, {customer.Name}. Welcome to I.C. Treats, here is your current order. :)");
+                while (true)
+                {
+                    Console.WriteLine("Your Order Details:");
+                    Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
+                    Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    DisplayOrder(customer.CurrentOrder);
+                    Option6Menu();
+                    Console.Write("Enter your option: ");
+                    int option = 0;
+                    if (int.TryParse(Console.ReadLine(), out option) && option > 0 && option <= 3)
+                    {
+                        if (option == 1)
+                        {
+                            Console.WriteLine("Chosen Option: [1] Choose an existing icecream to modify\n");
+                            Console.Write("Enter which icecream you want to modify (Starting from 1 as the first icecream): ");
+                            int toBeModified = 0;
+                            if (int.TryParse(Console.ReadLine(), out toBeModified) && toBeModified - 1 >= 0 && toBeModified - 1 < customer.CurrentOrder.IceCreamList.Count())
+                            {
+                                toBeModified -= 1;
+                                customer.CurrentOrder.ModifyIceCream(toBeModified);
+                            }
+
+                            else
+                            {
+                                Console.WriteLine("Icecream of that position does not exist.");
+                                continue;
+                            }
+                        }
+
+                        else if (option == 2)
+                        {
+                            Console.WriteLine("Chosen Option: [2] Add a new icecream\n");
+                            IceCream ic = null;
+                            customer.CurrentOrder.AddIceCream(ic);
+                        }
+
+                        else if (option == 3)
+                        {
+                            Console.WriteLine("Chosen Option: [3] Delete an icecream from the order\n");
+                            Console.Write("Enter which icecream you want to delete (Starting from 1 as the first icecream): ");
+                            int toBeDeleted = 0;
+                            if (int.TryParse(Console.ReadLine(), out toBeDeleted) && toBeDeleted - 1 >= 0 && toBeDeleted - 1 < customer.CurrentOrder.IceCreamList.Count())
+                            {
+                                toBeDeleted -= 1;
+                                customer.CurrentOrder.DeleteIceCream(toBeDeleted);
+                            }
+
+                            else
+                            {
+                                Console.WriteLine("Icecream of that position does not exist.");
+                                continue;
+                            }
+                        }
+
+                        Console.WriteLine("Your New Order Details:");
+                        Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
+                        Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+                        DisplayOrder(customer.CurrentOrder);
+                        outerLoopFlag = false;
+                        break;
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("Option does not exist.");
+                    }
+                }
+            }
+
+            else
+            {
+                Console.WriteLine("You do not have a current order.");
+                break;
+            }
+        }
+    }
+}
 
 InitCustomers(customerList);
 InitOrders(customerList, goldOrderList, regularOrderList);
