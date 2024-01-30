@@ -54,7 +54,15 @@ namespace Project_Otto
 
         public bool IsBirthday()
         {
-            return false; /* Placeholder, not implemented yet */
+            DateTime currentDate = DateTime.Now;
+            string formattedDate = currentDate.ToString("dd/MM/yy");
+            string formattedDob = Dob.ToString("dd/MM/yy");
+            if (formattedDob == formattedDate)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public override string ToString()

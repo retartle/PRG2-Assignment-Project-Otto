@@ -59,7 +59,7 @@ namespace Project_Otto
                 while (true)
                 {
                     Console.Write("Option (Cup/Cone/Waffle): ");
-                    chosenOption = Console.ReadLine().ToLower();
+                    chosenOption = Console.ReadLine().ToLower().Trim();
                     if (options.Contains(chosenOption))
                     {
                         break;
@@ -191,6 +191,7 @@ namespace Project_Otto
 
                         else if (reply == "n" || reply == "no")
                         {
+                            ((Waffle)ic).WaffleFlavour = "original";
                             Console.WriteLine("Original Waffle Flavour Configured.");
                             break;
                         }
@@ -333,7 +334,7 @@ namespace Project_Otto
                             }
                             else
                             {
-                                Flavour newFlavour = new Flavour(option, true, 1);
+                                Flavour newFlavour = new Flavour(option, false, 1);
                                 ic.Flavours.Add(newFlavour);
                             }
                             break;
@@ -359,8 +360,8 @@ namespace Project_Otto
                     addToppings = true;
                     while (true)
                     {
-                        Console.Write("How many? (1-3): ");
-                        if (int.TryParse(Console.ReadLine(), out amt) && amt > 0 && amt <= 3)
+                        Console.Write("How many? (1-4): ");
+                        if (int.TryParse(Console.ReadLine(), out amt) && amt > 0 && amt <= 4)
                         {
                             break;
                         }
@@ -424,14 +425,12 @@ namespace Project_Otto
         public double CalculateTotal()
         {
             double total = 0;
-            foreach (IceCream iceCream in iceCreamList)
+            foreach (IceCream iceCream in IceCreamList)
             {
                 double price = iceCream.CalculatePrice();
                 total += price;
             }
             return total;
-
-            /* Not completed, may be wrong */
         }
 
         public override string ToString()

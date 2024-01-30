@@ -25,7 +25,42 @@ namespace Project_Otto
 
         public override double CalculatePrice()
         {
-            return 0; /* Placeholder, not implemented yet */
+            //scoops
+            double scoopsPrice = 0;
+            if (Scoops == 1)
+            {
+                scoopsPrice = 4;
+            }
+
+            else if (Scoops == 2)
+            {
+                scoopsPrice = 5.50;
+            }
+
+            else if (Scoops == 3)
+            {
+                scoopsPrice = 6.50;
+            }
+
+            //flavours
+            double flavoursPrice = 0;
+            foreach (Flavour f in Flavours)
+            {
+                if (f.Premium)
+                {
+                    flavoursPrice += (2 * f.Quantity);
+                }
+            }
+
+            //toppings
+            double toppingsPrice = 0;
+            foreach (Topping t in Toppings)
+            {
+                toppingsPrice += 1;
+            }
+
+            double totalPrice = scoopsPrice + flavoursPrice + toppingsPrice;
+            return totalPrice;
         }
 
         public override string ToString()

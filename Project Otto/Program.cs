@@ -13,6 +13,7 @@ List<Order> goldOrderList = new List<Order>();
 List<Order> regularOrderList = new List<Order>();
 Queue<Order> goldOrderQueue = new Queue<Order>();
 Queue<Order> regularOrderQueue = new Queue<Order>();
+List<Customer> birthdayRedeemed = new List<Customer>();
 
 static void Menu()
 {
@@ -33,6 +34,8 @@ static void Menu()
         Console.WriteLine($"[{n+=1}] {i}");
     }
     Console.WriteLine("[0] Exit");
+    Console.WriteLine("-------ADVANCED-------");
+    Console.WriteLine("[7] Process & Checkout");
     Console.WriteLine("----------------------");
 }
 
@@ -220,45 +223,55 @@ static void InitOrders(List<Customer> customerList, List<Order> goldOrderList, L
     }
 }
 
-static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue, List<Order> goldOrderList, List<Order> regularOrderList)
+static void OptionSelector(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue, List<Order> goldOrderList, List<Order> regularOrderList, List<Customer> birthdayRedeemed)
 {
     while (true)
     {
         Console.Write("Enter your option: ");
-        int option = Convert.ToInt32(Console.ReadLine());
+        int option = 0;
 
-        if (option == 0)
+        if (int.TryParse(Console.ReadLine(), out option))
         {
-            Console.WriteLine("Exiting...");
-            break;
-        }
 
-        else if (option == 1)
-        {
-            Console.WriteLine("Chosen Option: [1] List all customers\n");
-            ListCustomers(customerList);
-        }
+            if (option == 0)
+            {
+                Console.WriteLine("Exiting...");
+                break;
+            }
 
-        else if (option == 2)
-        {
-            Console.WriteLine("Chosen Option: [2] List all current orders\n");
-            ListCurrentOrders(goldOrderQueue, regularOrderQueue);
-        }
+            else if (option == 1)
+            {
+                Console.WriteLine("Chosen Option: [1] List all customers\n");
+                ListCustomers(customerList);
+            }
 
-        else if (option == 4)
-        {
-            Console.WriteLine("Chosen Option: [4] Create a customer’s order\n");
-            CreateOrder(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);
-        }
+            else if (option == 2)
+            {
+                Console.WriteLine("Chosen Option: [2] List all current orders\n");
+                ListCurrentOrders(goldOrderQueue, regularOrderQueue);
+            }
 
-        else if (option == 6)
-        {
-            ModifyOrder(customerList);
-        }
-        
-        else
-        {
-            Console.WriteLine("Option does not exist.");
+            else if (option == 4)
+            {
+                Console.WriteLine("Chosen Option: [4] Create a customer’s order\n");
+                CreateOrder(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);
+            }
+
+            else if (option == 6)
+            {
+                ModifyOrder(customerList);
+            }
+
+            else if (option == 7)
+            {
+                Console.WriteLine("Chosen Option: [7] Process & Checkout");
+                ProcessOrder(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList, birthdayRedeemed);
+            }
+
+            else
+            {
+                Console.WriteLine("Option does not exist.");
+            }
         }
 
         Console.WriteLine();
@@ -342,12 +355,28 @@ static void DisplayOrder(Order order)
     }
 }
 
-static void ListCustomers(List<Customer> customerList)
+static void ListCustomers(List<Customer> customerList, Customer c = null)
 {
-    Console.WriteLine("{0,-10}{1,-11}{2,-12}{3,-19}{4,-19}{5,-12}", "Name", "Member ID", "DOB", "Membership Status", "Membership Points", "Punch Card");
-    foreach (Customer customer in customerList)
+
+    if (c == null)
     {
-        Console.WriteLine("{0,-10}{1,-11}{2,-12}{3,-19}{4,-19}{5,-12}", customer.Name, customer.MemberId, customer.Dob.ToString("dd/MM/yyyy"), customer.Rewards.Tier, customer.Rewards.Points, customer.Rewards.PunchCard);
+        Console.WriteLine("┌----------------------------------------------------------------------------------------┐");
+        Console.WriteLine("|{0,-10}|{1,-11}|{2,-12}|{3,-19}|{4,-19}|{5,-12}|", "Name", "Member ID", "DOB", "Membership Status", "Membership Points", "Punch Card");
+        Console.WriteLine("------------------------------------------------------------------------------------------");
+        foreach (Customer customer in customerList)
+        {
+            Console.WriteLine("|{0,-10}|{1,-11}|{2,-12}|{3,-19}|{4,-19}|{5,-12}|", customer.Name, customer.MemberId, customer.Dob.ToString("dd/MM/yyyy"), customer.Rewards.Tier, customer.Rewards.Points, customer.Rewards.PunchCard);
+        }
+        Console.WriteLine("└----------------------------------------------------------------------------------------┘");
+    }
+
+    else
+    {
+        Console.WriteLine("┌----------------------------------------------------------------------------------------┐");
+        Console.WriteLine("|{0,-10}|{1,-11}|{2,-12}|{3,-19}|{4,-19}|{5,-12}|", "Name", "Member ID", "DOB", "Membership Status", "Membership Points", "Punch Card");
+        Console.WriteLine("------------------------------------------------------------------------------------------");
+        Console.WriteLine("|{0,-10}|{1,-11}|{2,-12}|{3,-19}|{4,-19}|{5,-12}|", c.Name, c.MemberId, c.Dob.ToString("dd/MM/yyyy"), c.Rewards.Tier, c.Rewards.Points, c.Rewards.PunchCard);
+        Console.WriteLine("└----------------------------------------------------------------------------------------┘");
     }
 }
 
@@ -424,6 +453,11 @@ static void CreateOrder(List<Customer> customerList, Queue<Order> goldOrderQueue
 
         else
         {
+            if (customer.CurrentOrder != null)
+            {
+                Console.WriteLine("Existing order detected! Please use [4] to modify your current order, or use [7] to process and checkout your current order.");
+                break;
+            }
             Console.WriteLine($"Hi, {customer.Name}. Welcome to I.C. Treats, please fill up your order :)");
             Order newOrder = customer.MakeOrder();
 
@@ -602,7 +636,188 @@ static void ModifyOrder(List<Customer> customerList)
     }
 }
 
+static void ProcessOrder(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue, List<Order> goldOrderList, List<Order> regularOrderList, List<Customer> birthdayRedeemed)
+{
+    Order order = null;
+
+    if (goldOrderQueue.Count > 0)
+    {
+        order = goldOrderQueue.Dequeue();
+        goldOrderList.Add(order);
+    }
+
+    else if (regularOrderQueue.Count > 0)
+    {
+        order = regularOrderQueue.Dequeue();
+        regularOrderList.Add(order);
+    }
+
+    else
+    {
+        Console.WriteLine("No orders in the gold and regular queues.");
+    }
+
+    Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
+    Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+    DisplayOrder(order);
+    Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+    double total = order.CalculateTotal();
+
+    Customer customer = null;
+
+    foreach (Customer c in customerList)
+    {
+        if (c.CurrentOrder == order)
+        {
+            customer = c;
+        }
+    }
+
+    ListCustomers(customerList, customer);
+
+    bool isBday = customer.IsBirthday();
+    IceCream bdayIcecream = null; //marker to make sure the birthday icecream is not discounted by punchcard again
+
+    if (isBday && !birthdayRedeemed.Contains(customer))
+    {
+        double mostExpensive = 0;
+        foreach (IceCream ic in order.IceCreamList)
+        {
+            if (ic.CalculatePrice() > mostExpensive)
+            {
+                mostExpensive = ic.CalculatePrice();
+                bdayIcecream = ic;
+            }
+        }
+        Console.WriteLine($"Happy Birthday {customer.Name}! We will be gifting you the most expensive icecream (${mostExpensive}) in your order free of charge.");
+        birthdayRedeemed.Add(customer);
+        total -= mostExpensive;
+    }
+
+    if (customer.Rewards.PunchCard >= 10)
+    {
+        Console.WriteLine("Completed Punch Card Detected. First icecream in your order that has not been discounted will be free of charge.");
+        IceCream toBeDiscounted = null;
+        if (bdayIcecream != null)
+        {
+            if (bdayIcecream == order.IceCreamList[0])
+            {
+                if (order.IceCreamList.Count > 1)
+                {
+                    toBeDiscounted = order.IceCreamList[1];
+                }
+                else
+                {
+                    Console.WriteLine("Only one icecream in order, we will prioritising the birthday discount instead.");
+                }
+            }
+            else
+            {
+                toBeDiscounted = order.IceCreamList[0];
+            }
+        }
+        else
+        {
+            toBeDiscounted = order.IceCreamList[0];
+        }
+
+        if (bdayIcecream != toBeDiscounted && toBeDiscounted != null)
+        {
+            total -= toBeDiscounted.CalculatePrice();
+            customer.Rewards.PunchCard = 0;
+        }
+    }
+
+    if (total > 0)
+    {
+        if (customer.Rewards.Tier != "Ordinary" && customer.Rewards.Points > 0)
+        {
+            while (true)
+            {
+                int pointsToOffset = 0;
+                Console.Write($"You have {customer.Rewards.Points} points in your Point Card. How many would you like to offset on this order (${total:0.00})? (0 if none, each point worth $0.02): ");
+                if (int.TryParse(Console.ReadLine(), out pointsToOffset) && pointsToOffset <= customer.Rewards.Points)
+                {
+                    if (pointsToOffset == 0)
+                    {
+                        Console.WriteLine("Not redeeming any points.");
+                    }
+                    else if (pointsToOffset*0.02 > total)
+                    {
+                        Console.WriteLine($"You are redeeming too many points! The maximum number of points to redeem for this order is {Math.Floor(total/0.02)} points.");
+                        continue;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Offsetting {pointsToOffset} points from your card.");
+                        customer.Rewards.Points -= pointsToOffset;
+                        total -= (pointsToOffset * 0.02);
+                    }
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Input! Please enter a valid number of points to redeem.");
+                }
+            }
+        }
+    }
+
+    Console.WriteLine("┌----------┐");
+    Console.WriteLine("|Final Bill|");
+    Console.WriteLine("|----------|");
+    Console.WriteLine("|----------|");
+    Console.WriteLine("|----------|");
+    Console.WriteLine("|----------|");
+    Console.WriteLine("|----------|");
+    Console.WriteLine("|----------|");
+    Console.WriteLine($"|${total,9:0.00}|");
+    Console.WriteLine("└----------┘");
+    Console.WriteLine("Press any key to make payment.");
+    Console.ReadKey();
+
+    int punchcardIncrement = 0;
+    foreach (IceCream ic in order.IceCreamList)
+    {
+        punchcardIncrement += 1;
+    }
+
+    if (punchcardIncrement+customer.Rewards.PunchCard > 10)
+    {
+        customer.Rewards.PunchCard = 10;
+    }
+    else
+    {
+        customer.Rewards.PunchCard += punchcardIncrement;
+    }
+
+    Console.WriteLine("Payment completed. Your Punch Card has been updated.");
+
+    double pointsToAdd = Math.Floor(total * 0.72);
+    customer.Rewards.Points += Convert.ToInt32(pointsToAdd);
+
+    if (customer.Rewards.Points >= 100)
+    {
+        if (customer.Rewards.Tier == "Ordinary" || customer.Rewards.Tier == "Silver")
+        {
+            customer.Rewards.Tier = "Gold";
+        }
+    }
+
+    else if (customer.Rewards.Points >= 50)
+    {
+        if (customer.Rewards.Tier == "Ordinary")
+        {
+            customer.Rewards.Tier = "Silver";
+        }
+    }
+
+    order.TimeFulfilled = DateTime.Now;
+    customer.OrderHistory.Add(order);
+    customer.CurrentOrder = null;
+}
+
 InitCustomers(customerList);
 InitOrders(customerList, goldOrderList, regularOrderList);
 Menu();
-OptionSelector(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList);
+OptionSelector(customerList, goldOrderQueue, regularOrderQueue, goldOrderList, regularOrderList, birthdayRedeemed);
