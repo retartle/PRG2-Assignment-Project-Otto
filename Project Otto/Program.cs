@@ -383,6 +383,7 @@ static void ListCustomers(List<Customer> customerList, Customer c = null)
 static void ListCurrentOrders(Queue<Order> goldOrderQueue,  Queue<Order> regularOrderQueue)
 {
     Console.WriteLine("Gold Member Orders:");
+    Console.WriteLine("┌--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
     Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
     Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
@@ -396,13 +397,15 @@ static void ListCurrentOrders(Queue<Order> goldOrderQueue,  Queue<Order> regular
 
     else
     {
-        Console.WriteLine("No Current Gold member orders.");
+        Console.WriteLine("|No Current Gold member orders.");
     }
+    Console.WriteLine("└--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
 
     Console.WriteLine("\nRegular Member Orders:");
+    Console.WriteLine("┌--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
     Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
     Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-    
+
     if (regularOrderQueue.Count > 0)
     {
         foreach (Order o in regularOrderQueue)
@@ -413,8 +416,9 @@ static void ListCurrentOrders(Queue<Order> goldOrderQueue,  Queue<Order> regular
 
     else
     {
-        Console.WriteLine("No Current Regular member orders.");
+        Console.WriteLine("|No Current Regular member orders.");
     }
+    Console.WriteLine("└--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
 }
 
 static void CreateOrder(List<Customer> customerList, Queue<Order> goldOrderQueue, Queue<Order> regularOrderQueue, List<Order> goldOrderList, List<Order> regularOrderList)
@@ -498,9 +502,11 @@ static void CreateOrder(List<Customer> customerList, Queue<Order> goldOrderQueue
             newOrder.Id = highestOrderId+1;
 
             Console.WriteLine("Your Order Details:");
+            Console.WriteLine("┌--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
             Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
             Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
             DisplayOrder(newOrder);
+            Console.WriteLine("└--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
 
             if (customer.Rewards.Tier == "Gold")
             {
@@ -561,9 +567,11 @@ static void ModifyOrder(List<Customer> customerList)
                 while (true)
                 {
                     Console.WriteLine("Your Order Details:");
+                    Console.WriteLine("┌--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
                     Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
                     Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                     DisplayOrder(customer.CurrentOrder);
+                    Console.WriteLine("└--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
                     Option6Menu();
                     Console.Write("Enter your option: ");
                     int option = 0;
@@ -613,9 +621,11 @@ static void ModifyOrder(List<Customer> customerList)
                         }
 
                         Console.WriteLine("Your New Order Details:");
+                        Console.WriteLine("┌--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
                         Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
                         Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
                         DisplayOrder(customer.CurrentOrder);
+                        Console.WriteLine("└--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
                         outerLoopFlag = false;
                         break;
                     }
@@ -657,10 +667,12 @@ static void ProcessOrder(List<Customer> customerList, Queue<Order> goldOrderQueu
         Console.WriteLine("No orders in the gold and regular queues.");
     }
 
+    Console.WriteLine("Order Details:");
+    Console.WriteLine("┌--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
     Console.WriteLine("|{0,-4}|{1,-23}|{2,-23}|{3,-8}|{4,-8}|{5,-7}|{6,-16}|{7,-12}|{8,-12}|{9,-12}|{10,-11}|{11,-11}|{12,-11}|{13,-11}|", "ID", "Time Received", "Time Fulfilled", "Option", "Scoops", "Dipped", "Waffle Flavour", "Flavour1", "Flavour2", "Flavour3", "Topping1", "Topping2", "Topping3", "Topping4");
     Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
     DisplayOrder(order);
-    Console.WriteLine("----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+    Console.WriteLine("└--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
     double total = order.CalculateTotal();
 
     Customer customer = null;
@@ -673,6 +685,7 @@ static void ProcessOrder(List<Customer> customerList, Queue<Order> goldOrderQueu
         }
     }
 
+    Console.WriteLine("Customer Details:");
     ListCustomers(customerList, customer);
 
     bool isBday = customer.IsBirthday();
