@@ -1,3 +1,3 @@
 # "Project Otto" 
 
-diddly lang lang ez F
+Codename used during the production of this project to prevent discovery. 
